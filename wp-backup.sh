@@ -7,9 +7,17 @@ WP_CONFIG_FILE=$SITE_DIRECTORY/wp-config.php
 DB_NAME=`grep -Po "(?<=DB_NAME', ').+(?=')" $WP_CONFIG_FILE`
 TEMP_DIRECTORY=/tmp/$SITE_NAME-$NOW
 DUMP_PATH=$TEMP_DIRECTORY/database.sql
+MYSQL_PASSWORD=$2
+MYSQL_PASSWORD_ARG=-$2
+FILENAME=$SITE_NAME-$NOW.tar.gz
 
+if [ -z "$2" ]; then
+   MYSQL_PASSWORD_ARG=""
+fi
+ 
 mkdir $TEMP_DIRECTORY
-mysqldump --add-drop-table -u root -p $DB_NAME >$DUMP_PATH
+mysqldump --add-drop-table -u root -p$MYSQL_PASSWORD $DB_NAME >$DUMP_PATH
 cp -r -u -x $SITE_DIRECTORY $TEMP_DIRECTORY/www
-tar -zcf $SITE_NAME-$NOW.tar.gz -C $TEMP_DIRECTORY .
+tar -zcf $FILENAME -C $TEMP_DIRECTORY .
 rm -rf $TEMP_DIRECTORY 
+echo $FILENAME
